@@ -1,0 +1,118 @@
+<html>
+    <head>
+      <meta name="viewport" content="width=device-width, user-scalable=no, initial-scale=1, maximum-scale=1,viewport-fit=cover">      
+      <title>Things Trial</title>
+      <script src="https://cdn.jsdelivr.net/npm/vue"></script>
+      <script src="https://d.line-scdn.net/liff/1.0/sdk.js"></script>      
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/vConsole/3.2.0/vconsole.min.js"></script>
+      <link rel="stylesheet" 
+            href="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/css/bootstrap.min.css" 
+            integrity="sha384-MCw98/SFnGE8fJT3GXwEOngsV7Zt27NXFoaoApmYm81iuXoPkFOJwJ8ERdknLPMO" 
+            crossorigin="anonymous">
+      <script src="https://code.jquery.com/jquery-3.3.1.slim.min.js" 
+              integrity="sha384-q8i/X+965DzO0rT7abK41JStQIAqVgRVzpbzo5smXKp4YfRvH+8abtTE1Pi6jizo" 
+              crossorigin="anonymous"></script>
+      <script src="https://cdnjs.cloudflare.com/ajax/libs/popper.js/1.14.3/umd/popper.min.js" 
+              integrity="sha384-ZMP7rVo3mIykV+2+9J3UJ46jBk0WLaUAdn689aCwoqbBJiSnjAK/l8WvCWPIPm49" 
+              crossorigin="anonymous"></script>
+      <script src="https://stackpath.bootstrapcdn.com/bootstrap/4.1.3/js/bootstrap.min.js" 
+              integrity="sha384-ChfqqxuZUCnJSK3+MXmPNIyE6ZbWh2IMqE241rYiqJxyMiZ6OW/JmZQ5stwEULTy" 
+              crossorigin="anonymous"></script>
+      <script>
+          var vConsole = new VConsole();
+        </script>
+    </head>
+    <body>
+    
+      <div id="mainArea">
+          <button type="button"
+           v-on:click="unlock()">解鎖
+          </button>
+        </div> 
+        <div>        
+        </div>
+      </div>     
+    </body>
+   
+    <script>
+      var app = new Vue({ 
+        el: "#mainArea",   
+        data: {
+          step: 0,
+          liff: null,
+          device: null,
+          service: null,
+          deviceName: 'lock',
+          deviceService: { 
+            service: 'E625601E-9E55-4597-A598-76018A0D293D', 
+            characteristic: '26E2B12B-85F0-4F3F-9FDD-91D114270E6E',
+            notificationUuid: '8AFA153E-6117-4438-9299-F71FB4892883',
+            writeUuid: '8AFA153E-6117-4438-9299-F71FB4892882'
+          }
+        },
+        created () {
+          this.liff = window.liff
+          this.initLIFF()     
+        },
+        methods: {
+          initLIFF () {
+            this.liff.init(() => {
+              this.liff.initPlugins(['bluetooth']).then(() => {
+                this.liff.bluetooth.requestDevice().then((device) => { 
+                  this.device = device 
+                  this.connectService()                            
+                }).catch(e => {
+                  alert(JSON.stringify(e));
+                })
+              }).catch(e => {
+                alert(JSON.stringify(e));
+              })
+            })
+          },
+          connectService () {
+            this.device.gatt.connect().then(() => {
+                this.device.gatt.getPrimaryService(this.deviceService.service).then(service => {
+                      service.getCharacteristic(this.deviceService.notificationUuid).then((characteristic) => {
+                          characteristic.startNotifications(this.deviceService.writeUuid).then(() => {                                    
+                            characteristic.addEventListener('characteristicvaluechanged', e => {
+                            })
+                            resolve('subscribed')
+                          })
+                      }).catch((e) => {
+                        alert(JSON.stringify(e));
+                      });
+                }).catch(e => {
+                    alert(JSON.stringify(e));
+                });
+            }).catch(e => {
+                alert(e.code + ':' + e.message);
+            })
+          },
+          unlock () {
+            this.device.gatt.getPrimaryService(this.deviceService.service).then(service => {
+                  service.getCharacteristic(this.deviceService.writeUuid).then(characteristic => {
+                    if (!("TextEncoder" in window)) {
+                        alert("Sorry, this browser does not support TextEncoder...")
+                    }
+                    var deviceName = new TextEncoder("utf-8").encode(this.deviceName) // always utf-8
+                    characteristic.writeValue(deviceName).then(() => {
+                      alert("鎖打開囉！")                       
+                    })
+                    resolve('ready')
+                  })
+            }).catch(e => {
+                alert(JSON.stringify(e));
+            })
+          }
+        }
+      })
+      </script>
+      <style>
+        @import url('https://fonts.googleapis.com/css?family=Raleway:900');
+        #mainArea {
+          margin: 0px auto;
+          text-align: center;
+        
+        }
+      </style>
+  </html>
