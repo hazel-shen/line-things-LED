@@ -4,11 +4,9 @@ var bleno = require('bleno');
 
 var BlenoPrimaryService = bleno.PrimaryService;
 
-var BatteryCharacteristic = require('./battery-characteristic');
-var ReadCharacteristic = require('./read-characteristic');
-var WriteCharacteristic = require('./write-characteristic');
-var NotifyCharacteristic = require('./notify-characteristic');
-var FirmwareCharacteristic = require('./firmware-characteristic');
+var ReadCharacteristic = require('./characteristic/read-characteristic');
+var WriteCharacteristic = require('./characteristic/write-characteristic');
+var NotifyCharacteristic = require('./characteristic/notify-characteristic');
 
 function BatteryService() {
   BatteryService.super_.call(this, {
@@ -17,8 +15,6 @@ function BatteryService() {
           new ReadCharacteristic(),
           new WriteCharacteristic(),
           new NotifyCharacteristic(),
-          new BatteryCharacteristic(),
-          new FirmwareCharacteristic(),
       ]
   });
 }
