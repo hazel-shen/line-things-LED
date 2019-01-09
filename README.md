@@ -1,14 +1,16 @@
-# BLE Battery Service
-
-This example provides a BLE battery service (0x180F) for your Mac.
+#A simple example for LINE Things LED demo
 
 Install dependencies
 
     npm install
 
-Run the example
+This repo was modified from bleno's example code.
 
-    node main.js
+#How to activate 
 
+sudo serviceUUID={{Your service uuid from LINE things platform}} node main.js
 
-NOTE: This example no longer works on OSX starting in 10.10 (Yosemite). Apple has apparently blacklisted the battery uuid.
+#How to deploy LIFF Page
+
+Just modify the notificationUuid, writeUuid, and the html content.
+And then deploy.
