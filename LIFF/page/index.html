@@ -26,7 +26,7 @@
     
       <div id="mainArea">
           <button type="button"
-           v-on:click="unlock()">解鎖
+           v-on:click="unlock()"> 點燈
           </button>
         </div> 
         <div>        
@@ -96,7 +96,7 @@
                     }
                     var deviceName = new TextEncoder("utf-8").encode(this.deviceName) // always utf-8
                     characteristic.writeValue(deviceName).then(() => {
-                      alert("鎖打開囉！")                       
+                      alert("切換燈光！")                       
                     })
                     resolve('ready')
                   })

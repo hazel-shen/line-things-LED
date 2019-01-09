@@ -24,11 +24,3 @@ app.use(function(req, res, next) {
 app.get("/", (req, res) => {
   res.status(200).sendFile(__dirname + "/page/index.html");
 });
-
-app.get("/safe", (req, res) => {
-  res.status(200).sendFile(__dirname + "/page/Safe.html");
-});
-
-app.get("/trafficlight", (req, res) => {
-  res.status(200).sendFile(__dirname + "/page/TrafficLight.html");
-});
